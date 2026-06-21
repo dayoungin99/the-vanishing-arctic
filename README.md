@@ -4,7 +4,7 @@ An interactive data storytelling project exploring Arctic climate change through
 
 ## Live Site
 
-🌐 https://dayoungin99.github.io/the-vanishing-arctic/
+https://dayoungin99.github.io/the-vanishing-arctic/
 
 ## Overview
 
