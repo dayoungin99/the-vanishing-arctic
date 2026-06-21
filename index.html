@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Vanishing Arctic</title>
+
+  <!-- D3 v7 -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <!-- D3 Hexbin -->
+  <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
+  <!-- TopoJSON client -->
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  <!-- Proj4js for EPSG:3413 -> WGS84 conversion -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js"></script>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- HERO                                                    -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-stars"></div>
+    <div class="aurora"></div>
+
+    <p class="hero-label">SUJAL SIRIMILLA, DAYOUNG IN, SALINA TANG</p>
+    <h1>The Vanishing<br><em>Arctic</em></h1>
+    <p class="hero-sub">
+      The Arctic&mdash;the polar bear's most critical habitat&mdash;has been frozen for thousands of years. 
+      In the last four decades, we have melted half of it.
+      <br><br>
+      Scroll to witness this devastating transformation.
+    </p>
+  
+
+    <div class="scroll-cue">
+      <div class="scroll-arrow"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SCROLLYTELLING                                          -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div id="scrolly-container">
+
+    <!-- ── Left: Sticky Globe ─────────────────────────────── -->
+    <div class="sticky-visual">
+
+      <div id="map-container"></div>
+
+      <div class="data-display">
+        <div class="data-inner">
+          <p id="year-label">1979</p>
+        </div>
+        <p id="extent-label">
+          <span class="extent-value"><span id="extent-number">7.1</span> M km²</span>
+          September minimum extent
+        </p>
+        <div class="loss-bar-wrap">
+          <div class="loss-bar-label">
+            <span>Ice lost since 1979</span>
+            <span id="loss-pct">0%</span>
+          </div>
+          <div class="loss-bar-track">
+            <div class="loss-bar-fill" id="loss-bar-fill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Right: Scrolling Story Cards ───────────────────── -->
+    <div class="scroll-text">
+
+      <!-- Step 1 -->
+      <div class="step is-active" data-year="1980">
+        <div class="step-content">
+          <span class="step-year-tag">1980 — Baseline</span>
+          <h2>The Era of Ice</h2>
+          <p>
+            Satellite monitoring begins. The Arctic Ocean is locked in
+            thick, multi-year ice connecting Russia, Alaska, Canada, and
+            Greenland in one continuous frozen expanse. The September
+            minimum covers roughly <strong>7.2 million km²</strong>.
+          </p>
+          <div class="step-stat">
+            <div class="stat-item">
+              <span class="stat-number">7.2M</span>
+              <span class="stat-label">km² extent</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">–</span>
+              <span class="stat-label">First satellite record</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step" data-year="1990">
+        <div class="step-content">
+          <span class="step-year-tag">1990 — Early Warning</span>
+          <h2>A Subtle Shift</h2>
+          <p>
+            Throughout the 1980s and into the 90s, the sea ice begins to exhibit a slow but noticeable decline.
+            Thick, multi-year ice that historically survived the summer melt starts to break apart, leaving the Arctic slightly more vulnerable.
+          </p>
+          <div class="step-stat">
+            <div class="stat-item">
+              <span class="stat-number">6.2M</span>
+              <span class="stat-label">km² extent</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">−14%</span>
+              <span class="stat-label">Loss from 1980</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step" data-year="2000">
+        <div class="step-content">
+          <span class="step-year-tag">2000 — A New Century</span>
+          <h2>Cracks in the Ice</h2>
+          <p>
+            As the new millennium begins, the downward trend becomes impossible to ignore.
+            The edges of the ice pack retreat further from the coastlines of Eurasia and North America, opening up seasonal waters that were once frozen solid year-round.
+          </p>
+          <div class="step-stat">
+            <div class="stat-item">
+              <span class="stat-number">6.0M</span>
+              <span class="stat-label">km² extent</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">−17%</span>
+              <span class="stat-label">Loss from 1980</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step" data-year="2007">
+        <div class="step-content">
+          <span class="step-year-tag">2007 — The First Shock</span>
+          <h2>The Shrink Accelerates</h2>
+          <p>
+            A massive drop shocks the scientific community. The extent drops to <strong>4.3 million km²</strong>. Wide
+            expanses of open ocean appear off the coasts of Siberia and Alaska, opening
+            shipping routes that were once permanently frozen.
+          </p>
+          <div class="step-stat">
+            <div class="stat-item">
+              <span class="stat-number">4.3M</span>
+              <span class="stat-label">km² extent</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">−40%</span>
+              <span class="stat-label">Loss from 1980</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step" data-year="2012">
+        <div class="step-content">
+          <span class="step-year-tag">2012 — Record Minimum</span>
+          <h2>The Catastrophic Melt</h2>
+          <p>
+            A devastating season. Ice plummets to just <strong>3.4 million km²</strong>
+            — the lowest ever recorded in human history. The Northwest
+            Passage opens to unescorted shipping for the first time.
+            Arctic amplification is now undeniable.
+          </p>
+          <div class="step-stat">
+            <div class="stat-item">
+              <span class="stat-number">3.6M</span>
+              <span class="stat-label">km² extent</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">−50%</span>
+              <span class="stat-label">All-time record loss</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="step" data-year="2020">
+        <div class="step-content">
+          <span class="step-year-tag">2020 — Sustained Loss</span>
+          <h2>A Decade of Lows</h2>
+          <p>
+            The situation improves slightly from 2012, but it is still dire. The ice extent remained consistently low throughout the decade, failing to recover to pre-2007 levels. <strong>3.9 million km²</strong> is now the expected baseline. The ice that remains is dangerously thin and seasonal.
+          </p>
+          <div class="step-stat">
+            <div class="stat-item">
+              <span class="stat-number">3.9M</span>
+              <span class="stat-label">km² extent</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">−46%</span>
+              <span class="stat-label">Loss from 1980</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /scroll-text -->
+  </div><!-- /scrolly-container -->
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- OUTRO                                                   -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <section id="outro">
+    <h2>The Bears Left Behind</h2>
+    <p>
+      <span class="lead-sentence">
+        The Arctic sea ice isn't just frozen water.
+      </span>
+      For the polar bear, it is a hunting platform and a home. As warming accelerates, sea 
+      ice <strong>melts earlier</strong> in spring and <strong>forms later</strong> in the fall. 
+      <br>
+      <br>
+      This shorter window reduces the 
+      time polar bears have to hunt seals, their primary food source. When the ice retreats 
+      far offshore during summer and early autumn, bears are <strong>stranded on land</strong>
+      &mdash;forced to wait weeks or months for it to return. Staying on the coast leads 
+      to several disadvantages for the polar bears: loss of body weight and energy reserves 
+      due to lack of nutritious food, reduced reproductive rates, and lower survival rates 
+      for cubs.
+      <br>
+      <br>
+      Over time, longer periods spent onshore can contribute to declining health and 
+      population challenges for polar bear populations. <strong>Read more about these situations
+      below.</strong>
+    </p>
+    
+    <section class="sources-section">
+ 
+
+  <div class="article-grid">
+
+<a class="article-card"
+   href="https://www.nationalgeographic.com/animals/article/polar-bears-starvation-sea-ice-arctic-climate-change"
+   target="_blank">
+
+  <div class="source">National Geographic</div>
+  <h3>Polar Bears Are Trying to Adapt to a Warming Arctic. It's Not Working.</h3>
+
+  <p>
+    Researchers tracked polar bears in Hudson Bay and found that
+    longer ice-free seasons force bears to spend more time on land,
+    leading to weight loss and declining health.
+  </p>
+
+  <span class="read-more">Read Article →</span>
+
+</a>
+
+<a class="article-card"
+   href="https://www.usgs.gov/news/state-news-release/without-sea-ice-more-polar-bears-spend-time-onshore-increasing-potential"
+   target="_blank">
+
+  <div class="source">USGS</div>
+  <h3>Without Sea Ice, More Polar Bears Spend Time Onshore</h3>
+  <p>
+    Researchers found that shrinking Arctic sea ice is causing more
+    polar bears to come ashore and remain there for longer periods.
+  </p>
+  <span class="read-more">Read Article →</span>
+
+</a>
+
+<a class="article-card"
+   href="https://science.nasa.gov/earth/earth-observatory/polar-bears-struggle-as-sea-ice-declines-146023/"
+   target="_blank">
+
+  <div class="source">NASA</div>
+  <h3>Polar Bears Struggle as Sea Ice Declines</h3>
+  <p>
+    Earlier ice breakup and later freeze-up force bears to spend
+    longer periods fasting on land.
+  </p>
+  <span class="read-more">Read Article →</span>
+
+</a>
+
+<a class="article-card"
+   href="https://polarbearsinternational.org/polar-bears-changing-arctic/conservation-concerns/"
+   target="_blank">
+
+  <div class="source">Polar Bears International</div>
+  <h3>Sea Ice and Polar Bears</h3>
+  <p>
+    Explains why sea ice is essential for seal hunting and why
+    terrestrial food sources cannot replace it.
+  </p>
+  <span class="read-more">Read Article →</span>
+
+</a>
+
+<a class="article-card"
+   href="https://www.worldwildlife.org/species/polar-bear"
+   target="_blank">
+
+  <div class="source">WWF</div>
+  <h3>Polar Bear</h3>
+  <p>
+    Overview of the threats posed by sea-ice loss, including reduced
+    hunting opportunities and population decline.
+  </p>
+  <span class="read-more">Read Article →</span>
+
+</a>
+
+<a class="article-card"
+   href="https://time.com/6694426/climate-change-polar-bear-food-sources/"
+   target="_blank">
+
+  <div class="source">TIME</div>
+  <h3>As the Ice Melts, Polar Bears Are Failing to Find Enough Food on Land</h3>
+
+  <p>
+    Scientists found that food available on land cannot replace the
+    calories obtained from seals, making it difficult for polar bears
+    to maintain body weight during longer ice-free periods.
+  </p>
+
+  <span class="read-more">Read Article →</span>
+
+</a>
+
+  </div>
+</section>
+
+  </section>
+
+  <!-- ── Section 2: Temperature Anomaly ───────────────────── -->
+  <section id="temperature-section" class="temp-section">
+    <div class="temp-content">
+      <h2>Domino Effect - Arctic Amplification</h2>
+      <p>
+        The loss of sea ice isn't just a symptom of climate change—it's a powerful catalyst. 
+        <strong>As the reflective white ice disappears, the dark ocean absorbs more solar radiation, 
+        causing the Arctic to heat up nearly four times faster than the rest of the planet.</strong>
+      </p>
+      <p>
+        The map below illustrates this extreme warming anomaly, comparing the current and future predicted decades
+        against the historical baseline (1951–1980). The intense bright colors highlight areas experiencing rapid heating.
+      </p>
+    </div>
+
+    <div class="temp-question">
+      <h3>When does the Arctic become too warm for polar bears?</h3>
+      <p>Each point shows Arctic temperature by year, predicted under SSP8.5</p>
+      <br>
+    </div>
+    
+    <div id="temp-map-container">
+      <div id="temp-year-display" class="year-display">1980</div>
+      <input id="year-slider" type="range">
+    </div>
+
+    <!-- <div class="timeline-container">
+      <div id="temp-year-display" class="year-display">1980</div>
+      <input id="year-slider" type="range">
+    </div> -->
+  </section>
+
+  <!-- ── Section 3: Wrangel National Park Banner ────────── -->
+  <section id="wrangel">
+    <div class="wrangel-hero">
+     
+      <h2>Case Study - Wrangel <br> National Park</h2>
+      <p class="wrangel-description-placeholder">
+        Off the northeastern coast of Russia, Wrangel Island holds a unique place 
+        in the Arctic. A UNESCO World Heritage Site since 2004, it hosts the 
+        <strong>highest density of polar bear maternity dens in the world</strong> — 
+        earning it the nickname <strong>"the polar bear nursery."</strong> Each autumn, pregnant females 
+        come ashore to dig dens in the island's snow-covered hills, giving birth to cubs 
+        through the long Arctic winter. The island's isolated coastline and rich marine 
+        ecosystem have made it a critical refuge for polar bears. However, as climate
+        change is causing sea ice to retreat earlier each year, that refuge is threatened.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── Section 4: Seasonal Temperature Graphs ─────────── -->
+  <section id="wrangel-data">
+    <div id="wrangel-graph-container">
+      <div class="graph-title">Average Temperatures: July, August, September (1980–2100)</div>
+      <div id="wrangel-graph"></div>
+      <div class="graph-legend">
+        <span class="legend-item"><span class="legend-color" style="background:var(--orange)"></span> July</span>
+        <span class="legend-item"><span class="legend-color" style="background:var(--danger)"></span> August</span>
+        <span class="legend-item"><span class="legend-color" style="background:var(--blue)"></span> September</span>
+      </div>
+    </div>
+    <div class="wrangel-content">
+      <h2>The Critical Months</h2>
+      <p>
+        The summer months of July, August, and September are critical for polar bear survival 
+        because they coincide with the annual sea-ice minimum. As Arctic sea ice retreats 
+        during this period, many polar bears are forced ashore and use Wrangel Island as a 
+        temporary refuge. They may spend weeks or even months waiting for sea ice to return.
+      </p>
+
+      <p style="margin-top: 1rem;">
+        Rising temperatures are shortening the duration of stable sea ice and delaying its 
+        return in autumn. As polar bears are forced to remain on land, they have limited
+        access to more nutritious food sources and are displaced from their natural habitats,
+        threatening their survival as a species.
+        </p>
+
+      <p style="margin-top: 1rem;">
+        Our climate projections suggest that under a high-emissions scenario, conditions could 
+        worsen dramatically by the late twenty-first century. <strong>By around 2080, 
+        prolonged ice-free seasons may leave Wrangel Island and other Arctic coastlines 
+        unable to support large numbers of polar bears, threatening the long-term viability 
+        of many polar bear populations across the Arctic.</strong>
+      </p>
+    
+    </div>
+  </section>
+
+  <!-- ── Section 5: Churchill Banner ──────────
+  <section id="churchill">
+    <div class="churchill-hero">
+     
+      <h2>Case Study - Churchill, Manitoba</h2>
+      <p class="churchill-description-placeholder">
+        [Your description for Churchill goes here, 
+        DESCRIBE How it is the polar bear capital 
+        of the world, mention the Hudson Bay, and 
+        give POLAR BEAR relevant info]
+      </p>
+    </div>
+  </section>
+
+  ── Section 6: Churchill Seasonal Temperature Graphs ───────────
+  <section id="churchill-data">
+    <div id="churchill-graph-container">
+      <div class="graph-title">Average Temperatures: September, October, November (1980–2100)</div>
+      <div id="churchill-graph"></div>
+      <div class="graph-legend">
+        <span class="legend-item"><span class="legend-color" style="background:var(--orange)"></span> September</span>
+        <span class="legend-item"><span class="legend-color" style="background:var(--danger)"></span> October</span>
+        <span class="legend-item"><span class="legend-color" style="background:var(--blue)"></span> November</span>
+      </div>
+    </div>
+    <div class="churchill-content">
+      <h2>The Critical Months</h2>
+      <p>
+        Churchill, located on the shores of Hudson Bay, is known as the "Polar Bear Capital 
+        of the World." The summer months are critical for polar bear survival here because 
+        they coincide with the annual sea-ice minimum. As Arctic sea ice retreats during 
+        this period, many polar bears are forced ashore around Churchill. Bears of all ages 
+        may spend weeks or even months on land waiting for sea ice to reform and restore access 
+        to their primary hunting grounds on Hudson Bay.
+      </p>
+
+      <p style="margin-top: 1rem;">
+        Rising temperatures are shortening the duration of stable sea ice and delaying its 
+        return in autumn. As a result, polar bears must remain on land for longer periods, where 
+        food sources are limited and far less nutritious than seals. Extended stays onshore force 
+        bears to rely on stored fat reserves, increasing the risk of weight loss, reduced 
+        reproductive success, and lower cub survival rates.
+      </p>
+
+      <p style="margin-top: 1rem;">
+        Climate projections suggest that under a high-emissions scenario, conditions could 
+        worsen dramatically. <strong>Prolonged ice-free seasons may leave Churchill and the Hudson 
+        Bay region unable to support large numbers of polar bears for extended periods, threatening 
+        the long-term viability of this iconic polar bear subpopulation.</strong>
+      </p>
+    
+    </div>
+  </section> -->
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- CALL TO ACTION                                        -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<section id="call-to-action">
+  <div class="cta-inner">
+    <h2>The Arctic is a Warning.<br><em>Not Just for Polar Bears.</em></h2>
+
+    <p>
+      The polar bear's story is urgent — but it is not unique. Across every 
+      ecosystem on Earth, species are being pushed past the boundaries of 
+      what they evolved to survive. Songbirds navigating by stars toward 
+      nesting grounds that no longer exist. Sea turtles laying eggs on beaches 
+      swallowed by rising tides. Monarch butterflies completing a migration 
+      their offspring will have no habitat to finish. The theme is the same 
+      everywhere: temperatures rising faster than life can adapt.
+    </p>
+
+    <p>
+      The common thread is us&mdash;specifically, the emissions we choose to 
+      produce. Every degree of warming we avoid is habitat preserved, a season 
+      extended, a population that doesn't cross the threshold into decline. 
+      The data throughout this project makes clear that the difference between 
+      a difficult future and a catastrophic one is still within our control.
+    </p>
+
+    <div class="cta-actions">
+      <div class="cta-action-item">
+        <span class="cta-action-icon">🌡</span>
+        <strong>Know your footprint.</strong>
+        <p>
+          Transportation, diet, and home energy are the three largest sources 
+          of individual emissions. Make small changes towards reducing your
+          own emissions, and these consistent steps compound throughout decades.
+        </p>
+      </div>
+      <div class="cta-action-item">
+        <span class="cta-action-icon">🗳</span>
+        <strong>Vote for climate policy.</strong>
+        <p>
+          Individual action matters, but systemic change — in energy, industry, 
+          and land use — requires policy. The elections that feel local often 
+          determine the most.
+        </p>
+      </div>
+      <div class="cta-action-item">
+        <span class="cta-action-icon">📢</span>
+        <strong>Talk about it.</strong>
+        <p>
+          Climate silence is one of the biggest barriers to action. Most people
+          know of global warming, but few know the actual consequences. Sharing 
+          what you've learned — even in small conversations — shifts what feels 
+          normal and urgent.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- FINAL CONCLUSION                                      -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<section id="final-conclusion">
+
+  <div class="conclusion-image">
+    <img src="praying.jpg" alt="Polar bear cub">
+  </div>
+
+  <div class="conclusion-content">
+
+    <span class="conclusion-tag">
+      FINAL THOUGHTS
+    </span>
+
+    <h2>
+      The Arctic Is Vanishing.<br>
+      <em>But the Future Is <br> Still Ours. </em>
+    </h2>
+
+    <p>
+      Over the past four decades, we have watched half of the Arctic's summer sea ice
+      disappear&mdash;not in a single disaster, but in the slow, compounding arithmetic
+      of warmer seasons and shorter winters. Under the high-emissions scenario, temperatures
+      continue their steady climb into levels polar bears cannot survive&mdash;
+      within the next 50 years.
+    </p>
+
+    <p>
+      But <strong>this trajectory is not fixed.</strong> Every fraction of warming avoided 
+      translates directly into sea ice preserved, hunting seasons extended, and populations 
+      that do not cross the threshold into collapse. Our visualization succeeds because it makes 
+      the loss geographic and visible — you don't just read that half the ice is gone, you watch 
+      it disappear. The choices we make will determine whether this environment stabilizes or 
+      continues its freefall. No single year, record minimum, or isolated event decides that. 
+      <strong>WE do.</strong>
+    </p>
+
+    <p>
+      The Arctic is the Earth's early warning. <strong>Reduce your emissions. Treat this not 
+      as someone else's problem, but as a defining challenge of the world we are living in 
+      today.</strong>
+    </p>
+
+  </div> <!-- CLOSE conclusion-content -->
+
+
+  <!-- FULL WIDTH CREDITS -->
+
+  <div class="conclusion-stat">
+
+      <div>
+        <span>Dayoung In</span>
+        <small>dain@ucsd.edu</small>
+      </div>
+
+      <div>
+        <span>Sujal Sirimilla</span>
+        <small>ssirimilla@ucsd.edu</small>
+      </div>
+
+      <div>
+        <span>Salina Tang</span>
+        <small>sat018@ucsd.edu</small>
+      </div>
+
+  </div>
+
+</section>
+
+  <!-- Scripts -->
+  <script src="main.js"></script>
+</body>
+</html>
